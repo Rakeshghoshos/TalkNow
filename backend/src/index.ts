@@ -12,8 +12,10 @@ const io = new Server(server, {
 });
 
 app.get("/", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
   res.status(200).json("server connected");
 });
+
 
 io.on("connection", (socket: Socket) => {
   console.log(`User connected: ${socket.id}`);
