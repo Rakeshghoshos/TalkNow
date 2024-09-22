@@ -18,11 +18,15 @@ export class UserManager{
         UserManager.queue = UserManager.queue.filter(x => x !== socketId);
     }
 
-    static maintainQueue(id:any): any{
+    static maintainQueue(id:any,roomId:any,socketIds:any): any{
+        if(roomId && socketIds.length > 0){
+            RoomManager.removeRoom(roomId);
+            UserManager.queue.push(...socketIds);
+        }
+
         if(UserManager.users.length < 2){
             return null;
         }
-
         let index = UserManager.queue.findIndex((u:any) => u.toString() == id.toString());
         let user1 = UserManager.queue.splice(index, 1)[0];;
         let user2 = UserManager.queue.shift();

@@ -39,8 +39,13 @@ io.on("connection", (socket: Socket) => {
   });
 
   // Create or join a room
-  socket.on("roomCreate", () => {
-    const data = UserManager.maintainQueue(socket.id);
+  socket.on("roomCreate", ({roomId}) => {
+    let socketIds;
+    const room = io.sockets.adapter.rooms.get(roomId);
+     if(room){
+      socketIds = Array.from(room);
+     }
+    const data = UserManager.maintainQueue(socket.id,roomId,socketIds);
     if (data) {
       socket.join(data.roomId);
       socket.emit("roomCreated", data);
@@ -87,10 +92,15 @@ io.on("connection", (socket: Socket) => {
     });
   });
 
+  socket.on("stopVideo",({remoteSocketId})=>{
+    io.to(remoteSocketId).emit("stopVideo",{id:socket.id})
+  });
+
   // Handle user disconnect
   socket.on("disconnect", () => {
     UserManager.removeUser(socket.id);
     console.log(`User ${socket.id} disconnected.`);
+    socket.broadcast.emit('peerDisconnected', { id: socket.id });
   });
 });
 
