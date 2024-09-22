@@ -2,12 +2,18 @@ import express from "express";
 import { Server, Socket } from "socket.io";
 import http from "http";
 import { UserManager } from "./managers/UserManager.js";
-
 const app = express();
+app.use(cors({
+  origin: ["https://talknow-lovat.vercel.app", "https://talk-now-virid.vercel.app"],
+  credentials: true,
+}));
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["https://talknow-lovat.vercel.app", "https://talk-now-virid.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true
   },
 });
 
