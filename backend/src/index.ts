@@ -2,13 +2,24 @@ import express from "express";
 import { Server, Socket } from "socket.io";
 import http from "http";
 import { UserManager } from "./managers/UserManager.js";
+import cors from "cors";
 
 const app = express();
+app.use(cors({
+  origin: (origin, callback) => {
+    callback(null, true); // Allow all origins
+  },
+  credentials: true, // Allow credentials (cookies, etc.)
+}));
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
   },
+  transports: ['websocket', 'polling']
 });
 
 app.get("/", (req, res) => {
