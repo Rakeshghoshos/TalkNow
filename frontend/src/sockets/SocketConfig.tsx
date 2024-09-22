@@ -5,7 +5,10 @@ let socket: Socket | null = null;
 
 export const initiateSocketConnection = () => {
   if (!socket) {
-    socket = io(environment.socket_url);
+    socket = io("https://talk-now-virid.vercel.app", {
+  transports: ["websocket", "polling"], // Ensure the correct transports
+  withCredentials: true, // Important for handling cookies and credentials
+});
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
     });
