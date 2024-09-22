@@ -3,7 +3,7 @@
 // }
 
 const environment = {
-    socket_url : "https://talk-now-wheat.vercel.app"
+    socket_url : "https://talk-now-virid.vercel.app"
 }
 
 export default environment;
