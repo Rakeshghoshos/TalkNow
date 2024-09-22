@@ -14,8 +14,6 @@ function Rooms({
   const { socket } = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-
-
   // Display local video stream
   useEffect(() => {
     if (localVideoRef.current && localVideoTrack) {
@@ -51,6 +49,7 @@ function Rooms({
         if (WebRtcServices.peer.iceConnectionState === "connected") {
           console.log("ICE connection established successfully.");
         } else if (WebRtcServices.peer.iceConnectionState === "failed" || WebRtcServices.peer.iceConnectionState === "disconnected") {
+          stopRemoteVideo();
           console.error("ICE connection failed or disconnected.");
         }
       };
@@ -80,10 +79,9 @@ function Rooms({
       // Join Room
       socket.on("joinRoom", (data) => {
         if (data && data.roomId) {
-          socket.emit("joinRoom", { roomId: data.roomId });
           setRemoteSocketId(data.user1);
           setRoomId(data.roomId);
-          console.log(roomId);
+          socket.emit("joinRoom", { roomId: data.roomId });
         }
       });
 
@@ -189,11 +187,50 @@ function Rooms({
     };
   }, [remoteVideoRef]);
   
+  const stopRemoteVideo = () => {
+    if (remoteVideoRef.current) {
+      // Stop the video stream tracks
+      const remoteStream = remoteVideoRef.current.srcObject as MediaStream;
+      if (remoteStream) {
+        remoteStream.getTracks().forEach((track) => track.stop());
+      }
   
+      // Reset the video element
+      remoteVideoRef.current.pause();
+      remoteVideoRef.current.srcObject = null;
+      console.log("Remote video stopped and reset.");
+    }
+  };
+
+
+  useEffect(()=>{
+    if(socket && remoteSocketId){
+      socket.on("stopVideo",({id}:{id:any})=>{
+        if(id == remoteSocketId){
+          stopRemoteVideo();
+          setRemoteSocketId(null);
+        }
+      });
+    }
+
+    return ()=>{
+      socket?.off("stopVideo");
+    }
+  },[socket,remoteSocketId]);
   // Join the lobby and create a room
   const joinLobby = async () => {
     if (socket) {
-      socket.emit("roomCreate", "");
+      // if(remoteSocketId && WebRtcServices.peer){
+      //   stopRemoteVideo();
+      //   setRemoteSocketId(null);
+      //   // WebRtcServices.closeConnection();
+      // }
+
+      if(remoteSocketId){
+        socket.emit("stopVideo",{remoteSocketId});
+      }
+
+      socket.emit("roomCreate", {roomId:roomId});
       socket.on("roomCreated", async (data) => {
         if (data && data.user2 && data.roomId) {
           setRemoteSocketId(data.user2);
@@ -216,6 +253,8 @@ function Rooms({
       <button className="w-20 h-10 bg-blue-600 text-yellow-50 rounded-3xl" onClick={joinLobby}>
         Call
       </button>
+      </div>
+      <div><br/>
       </div>
       {remoteVideoRef && <div className="w-full h-3/4 flex justify-center items-center flex-col">
         <video ref={remoteVideoRef} autoPlay playsInline muted width={400} height={400} />

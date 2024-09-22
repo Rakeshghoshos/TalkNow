@@ -47,6 +47,7 @@ class WebRtcServices {
         }
     }
 
+
     // Set local description with error handling
     async setLocalDescription(sdp: RTCSessionDescriptionInit) {
         try {
@@ -87,9 +88,12 @@ class WebRtcServices {
     // Close the peer connection
     closeConnection() {
         if (this.peer) {
-            this.peer.close();
+          this.peer.ontrack = null;
+          this.peer.onicecandidate = null;
+          this.peer.close();
+          console.log("Peer connection closed.");
         }
-    }
+      }
 }
 
 export default new WebRtcServices();
