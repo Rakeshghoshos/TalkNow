@@ -5,7 +5,10 @@ let socket: Socket | null = null;
 
 export const initiateSocketConnection = () => {
   if (!socket) {
-    socket = io(environment.socket_url);
+    socket = io(`${environment.socket_url}`, {
+  transports: ["websocket", "polling"], // Ensure the correct transports
+  withCredentials: true, // Important for handling cookies and credentials
+});
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
     });

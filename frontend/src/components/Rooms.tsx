@@ -83,6 +83,7 @@ function Rooms({
           socket.emit("joinRoom", { roomId: data.roomId });
           setRemoteSocketId(data.user1);
           setRoomId(data.roomId);
+          console.log(roomId);
         }
       });
 
