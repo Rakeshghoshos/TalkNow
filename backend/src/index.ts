@@ -13,7 +13,8 @@ const io = new Server(server, {
   cors: {
     origin: ["https://talknow-lovat.vercel.app", "https://talk-now-virid.vercel.app"],
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true,
+    transports: ['websocket', 'polling']
   },
 });
 
