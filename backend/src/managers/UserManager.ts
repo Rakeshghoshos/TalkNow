@@ -5,8 +5,13 @@ export interface Users{
     socket:Socket
 }
 export class UserManager{
-    static users: Users[]=[];
-    static queue: string[]=[];
+    static users: Users[];
+    static queue: string[];
+
+    Constructor(){
+        this.users = [];
+        this.queue = [];
+    }
 
     static addUser(socket:Socket){
         UserManager.users.push({socket:socket});
@@ -18,13 +23,13 @@ export class UserManager{
         UserManager.queue = UserManager.queue.filter(x => x !== socketId);
     }
 
-    static maintainQueue(id:any,roomId:any,socketIds:any): any{
-        if(roomId && socketIds.length > 0){
+    static maintainQueue(id:any,roomId:any,socketIds:string[]): any{
+        if(roomId && socketIds?.length > 0){
             RoomManager.removeRoom(roomId);
             UserManager.queue.push(...socketIds);
         }
 
-        if(UserManager.users.length < 2){
+        if(UserManager?.users?.length < 2){
             return null;
         }
         let index = UserManager.queue.findIndex((u:any) => u.toString() == id.toString());
