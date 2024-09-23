@@ -5,14 +5,9 @@ export interface Users{
     socket:Socket
 }
 export class UserManager{
-    static users: Users[];
-    static queue: string[];
-
-    Constructor(){
-        this.users = [];
-        this.queue = [];
-    }
-
+    static users: Users[] = [];
+    static queue: string[] = [];
+    
     static addUser(socket:Socket){
         UserManager.users.push({socket:socket});
         UserManager.queue.push(socket.id);
