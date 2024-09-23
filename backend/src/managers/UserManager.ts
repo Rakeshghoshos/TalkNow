@@ -23,8 +23,8 @@ export class UserManager{
         UserManager.queue = UserManager.queue.filter(x => x !== socketId);
     }
 
-    static maintainQueue(id:any,roomId:any,socketIds:string[]): any{
-        if(roomId && socketIds?.length > 0){
+    static maintainQueue(id:any,roomId:any,socketIds:any): any{
+        if(roomId && socketIds && socketIds?.length > 0){
             RoomManager.removeRoom(roomId);
             UserManager.queue.push(...socketIds);
         }
